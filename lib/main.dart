@@ -22,13 +22,25 @@ class _TylasSweetHomeState extends State<TylasSweetHome> {
   }
 
   Future<void> _cargarFotos() async {
-    final manifestContent = await rootBundle.loadString('AssetManifest.json');
-    final Map<String, dynamic> manifestMap = json.decode(manifestContent);
-    setState(() {
-      imagenes = manifestMap.keys
-          .where((String key) => key.contains('assets/images/postre'))
+    try {
+      final manifestContent = await rootBundle.loadString('AssetManifest.json');
+      final Map<String, dynamic> manifestMap = json.decode(manifestContent);
+
+      // Filtramos solo los que empiecen con 'assets/images/postre' y sean archivos reales
+      final fotosEncontradas = manifestMap.keys
+          .where((String key) => key.startsWith('assets/images/postre'))
           .toList();
-    });
+
+      setState(() {
+        imagenes = fotosEncontradas;
+      });
+    } catch (e) {
+      print("Error cargando fotos: $e");
+      // Si falla el auto-escaneo, ponemos una foto de respaldo para que no se quede la rueda
+      setState(() {
+        imagenes = [];
+      });
+    }
   }
 
   @override
