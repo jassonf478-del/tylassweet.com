@@ -2,47 +2,32 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-void main() => runApp(const TylasSweetApp());
+void main() => runApp(
+  const MaterialApp(debugShowCheckedModeBanner: false, home: TylasSweetHome()),
+);
 
-class TylasSweetApp extends StatelessWidget {
-  const TylasSweetApp({super.key});
+class TylasSweetHome extends StatefulWidget {
+  const TylasSweetHome({super.key});
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorSchemeSeed: Colors.pinkAccent, useMaterial3: true),
-      home: const GaleriaAutomatica(),
-    );
-  }
+  State<TylasSweetHome> createState() => _TylasSweetHomeState();
 }
 
-class GaleriaAutomatica extends StatefulWidget {
-  const GaleriaAutomatica({super.key});
-  @override
-  State<GaleriaAutomatica> createState() => _GaleriaAutomaticaState();
-}
-
-class _GaleriaAutomaticaState extends State<GaleriaAutomatica> {
+class _TylasSweetHomeState extends State<TylasSweetHome> {
   List<String> imagenes = [];
 
   @override
   void initState() {
     super.initState();
-    _cargarArchivos();
+    _cargarFotos();
   }
 
-  // ESTA ES LA MAGIA: Lee el inventario de Flutter automáticamente
-  Future<void> _cargarArchivos() async {
+  Future<void> _cargarFotos() async {
     final manifestContent = await rootBundle.loadString('AssetManifest.json');
     final Map<String, dynamic> manifestMap = json.decode(manifestContent);
-
-    // Filtramos solo lo que esté en la carpeta de imágenes
-    final fotosCargadas = manifestMap.keys
-        .where((String key) => key.contains('assets/images/'))
-        .toList();
-
     setState(() {
-      imagenes = fotosCargadas;
+      imagenes = manifestMap.keys
+          .where((String key) => key.contains('assets/images/postre'))
+          .toList();
     });
   }
 
@@ -50,25 +35,27 @@ class _GaleriaAutomaticaState extends State<GaleriaAutomatica> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🍰 Catálogo Tylas Sweet'),
-        backgroundColor: Colors.pink[50],
+        title: const Text(
+          '🍰 Tylas Sweet',
+          style: TextStyle(color: Colors.pink),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
       ),
       body: imagenes.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : GridView.builder(
               padding: const EdgeInsets.all(10),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // 2 columnas
+                crossAxisCount: 2,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
               ),
               itemCount: imagenes.length,
-              itemBuilder: (context, index) {
-                return ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Image.asset(imagenes[index], fit: BoxFit.cover),
-                );
-              },
+              itemBuilder: (context, index) => ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset(imagenes[index], fit: BoxFit.cover),
+              ),
             ),
     );
   }

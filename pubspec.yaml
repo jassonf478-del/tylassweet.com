@@ -1,7 +1,6 @@
 name: tylas_sweet
 description: "A new Flutter project."
 publish_to: 'none'
-
 version: 1.0.0+1
 
 environment:
@@ -10,9 +9,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.8
-  video_player: ^2.10.1
-  url_launcher: ^6.3.1  # He añadido esto para que funcionen los botones de WhatsApp y TikTok
 
 dev_dependencies:
   flutter_test:
@@ -21,15 +17,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-  # Registro de Carpetas
   assets:
     - assets/images/
-    - assets/videos/
-    - assets/fonts/
-
-  # Registro de Fuentes
-  fonts:
-    - family: CreamCake
-      fonts:
-        - asset: assets/fonts/CreamCake.ttf
