@@ -1,56 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-void main() => runApp(const TylasSweetApp());
-
-class TylasSweetApp extends StatelessWidget {
-  const TylasSweetApp({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+void main() => runApp(const MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: Colors.pink,
-        textTheme: GoogleFonts.quicksandTextTheme(),
-      ),
-      home: const CatalogPage(),
-    );
-  }
-}
+      home: CatalogPage(),
+    ));
 
 class CatalogPage extends StatelessWidget {
   const CatalogPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Generamos la lista de las 94 fotos automáticamente
+    // Generamos la lista de tus 94 fotos
     final List<String> todasLasFotos =
         List.generate(94, (index) => "postre (${index + 1}).jpeg");
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Tylas Sweet",
-            style: GoogleFonts.pacifico(
-                fontSize: 30, color: Colors.pink.shade700)),
+        title: const Text("Tylas Sweet",
+            style: TextStyle(
+                fontSize: 28, fontWeight: FontWeight.bold, color: Colors.pink)),
         centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
       ),
       body: GridView.builder(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(10),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 0.85,
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+          childAspectRatio: 0.8,
         ),
         itemCount: todasLasFotos.length,
         itemBuilder: (context, index) {
           return Card(
-            elevation: 3,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-            clipBehavior: Clip.antiAlias,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -58,31 +41,19 @@ class CatalogPage extends StatelessWidget {
                   child: Image.asset(
                     "assets/images/${todasLasFotos[index]}",
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stack) => Container(
-                      color: Colors.pink.shade50,
-                      child:
-                          const Icon(Icons.cake, color: Colors.pink, size: 40),
-                    ),
+                    errorBuilder: (context, error, stack) =>
+                        const Icon(Icons.cake, size: 50, color: Colors.pink),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    "Postre #${index + 1}",
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  child:
+                      Text("Postre #${index + 1}", textAlign: TextAlign.center),
                 ),
               ],
             ),
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => launchUrl(Uri.parse("https://wa.me/50499656622")),
-        label: const Text("Pedidos WhatsApp"),
-        icon: const Icon(Icons.whatsapp),
-        backgroundColor: Colors.green,
       ),
     );
   }
