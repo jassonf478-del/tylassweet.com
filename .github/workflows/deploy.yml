@@ -14,9 +14,10 @@ jobs:
       - name: Instalar dependencias
         run: flutter pub get
       - name: Construir Web
-        run: flutter build web --release --base-href "/tylassweet.com/"
+        run: flutter build web --release --base-href "/"
       - name: Desplegar a GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build/web
+          cname: tylassweet.com
