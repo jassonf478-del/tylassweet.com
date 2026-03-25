@@ -11,8 +11,11 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      - run: flutter build web --base-href "/"
-      - name: Deploy to GitHub Pages
+      - name: Instalar dependencias
+        run: flutter pub get
+      - name: Construir Web
+        run: flutter build web --release --base-href "/tylassweet.com/"
+      - name: Desplegar a GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
