@@ -1,17 +1,17 @@
 name: tylas_sweet
-description: "Repostería Profesional Tylas Sweet"
+description: "Reposteria Tylas Sweet"
 publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.9.0
+  sdk: ^3.0.0 # Bajamos la exigencia del SDK para que GitHub no sufra
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  url_launcher: ^6.3.1 # Necesario para WhatsApp/TikTok
-  google_fonts: ^6.2.1 # Para usar fuentes elegantes sin errores de archivos .ttf
+  url_launcher: ^6.3.1
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:

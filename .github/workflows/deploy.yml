@@ -1,23 +1,30 @@
-name: Desplegar Tylas Sweet
+name: Deploy to GitHub Pages
+
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      - name: Instalar dependencias
+          # Dejamos que GitHub elija la última estable automáticamente
+          
+      - name: Install dependencies
         run: flutter pub get
-      - name: Construir Web
-        run: flutter build web --release --base-href "/"
-      - name: Desplegar a GitHub Pages
+
+      - name: Build Web
+        # El comando clave para evitar errores de compilación
+        run: flutter build web --release
+
+      - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build/web
-          cname: tylassweet.com
