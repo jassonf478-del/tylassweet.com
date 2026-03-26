@@ -48,7 +48,7 @@ class _MainNavigationState extends State<MainNavigation> {
     try {
       await _audioPlayer.setUrl(radioUrl);
     } catch (e) {
-      debugPrint("Error: $e");
+      debugPrint("Error Radio: $e");
     }
   }
 
@@ -83,23 +83,24 @@ class _MainNavigationState extends State<MainNavigation> {
       backgroundColor: const Color(0xFFFFF8F0),
       body: Stack(
         children: [
-          // --- CONTENIDO DE FONDO (CATÁLOGO) ---
+          // --- CONTENIDO (CATÁLOGO) ---
           Padding(
-            padding:
-                const EdgeInsets.top(100), // Espacio para el header flotante
+            // CORRECCIÓN AQUÍ: EdgeInsets.only en lugar de .top
+            padding: const EdgeInsets.only(top: 90),
             child: _selectedIndex == 0
                 ? const CatalogGrid()
-                : const Center(child: Text("Próximamente")),
+                : const Center(child: Text("Sección de Postres próximamente")),
           ),
 
-          // --- ENCABEZADO DINÁMICO Y PEQUEÑO ---
+          // --- HEADER DINÁMICO GLASS ---
           Positioned(
-            top: 10,
+            top: 15,
             left: 15,
             right: 15,
             child: ClipRRect(
+              borderRadius: BorderRadius.circular(50),
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
                 child: Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
@@ -107,60 +108,49 @@ class _MainNavigationState extends State<MainNavigation> {
                     color: Colors.white.withValues(alpha: 0.7),
                     borderRadius: BorderRadius.circular(50),
                     border:
-                        Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                        Border.all(color: Colors.white.withValues(alpha: 0.4)),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 15,
-                        offset: const Offset(0, 5),
                       )
                     ],
                   ),
                   child: Row(
                     children: [
-                      // Logo Pequeño
                       Image.asset(
                         "assets/images/logo.png",
-                        height: 45,
+                        height: 40,
                         errorBuilder: (c, e, s) =>
                             const Icon(Icons.cake, color: Colors.pink),
                       ),
                       const SizedBox(width: 10),
-                      Text(
+                      const Text(
                         "Tylas Sweet",
-                        style: GoogleFonts.quicksand(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.pink[800],
-                          fontSize: 16,
-                        ),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.pink),
                       ),
                       const Spacer(),
-                      // Selector de menú minimalista
                       _miniNavBtn("Pasteles", 0),
                       _miniNavBtn("Postres", 1),
-                      const SizedBox(width: 10),
-                      // Botón Radio Compacto
-                      GestureDetector(
-                        onTap: _toggleRadio,
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: _isPlaying ? Colors.pink : Colors.pink[50],
-                            shape: BoxShape.circle,
-                          ),
-                          child: _isLoading
-                              ? const SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child: CircularProgressIndicator(
-                                      strokeWidth: 2, color: Colors.pink))
-                              : Icon(
-                                  _isPlaying ? Icons.pause : Icons.play_arrow,
-                                  size: 18,
-                                  color:
-                                      _isPlaying ? Colors.white : Colors.pink,
-                                ),
-                        ),
+                      const SizedBox(width: 8),
+                      // Botón Radio
+                      IconButton(
+                        onPressed: _toggleRadio,
+                        icon: _isLoading
+                            ? const SizedBox(
+                                width: 15,
+                                height: 15,
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2))
+                            : Icon(
+                                _isPlaying
+                                    ? Icons.pause_circle
+                                    : Icons.play_circle,
+                                color: Colors.pink,
+                                size: 30),
                       ),
                     ],
                   ),
@@ -177,14 +167,10 @@ class _MainNavigationState extends State<MainNavigation> {
     bool isSelected = _selectedIndex == index;
     return TextButton(
       onPressed: () => setState(() => _selectedIndex = index),
-      style: TextButton.styleFrom(
-        foregroundColor: isSelected ? Colors.pink : Colors.black54,
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-      ),
       child: Text(
         label,
         style: TextStyle(
-          fontSize: 13,
+          color: isSelected ? Colors.pink : Colors.black54,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         ),
       ),
