@@ -37,11 +37,12 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int _selectedIndex = 0;
 
+  // Lista de páginas del menú
   final List<Widget> _pages = [
-    const CatalogPage(), // Pasteles
-    const DessertsPage(), // NUEVA: Cupcakes, Flan, etc.
-    const AboutUsPage(),
-    const ReviewsPage(),
+    const CatalogPage(), // Pasteles (3-5 columnas)
+    const DessertsPage(), // Cupcakes, Flan, Chocoflan
+    const AboutUsPage(), // Misión, Visión, Orígenes
+    const ReviewsPage(), // Reseñas de clientes
   ];
 
   Future<void> _launchSocial(String url) async {
@@ -58,6 +59,7 @@ class _MainNavigationState extends State<MainNavigation> {
       body: SafeArea(
         child: Column(
           children: [
+            // --- ENCABEZADO CON LOGO Y REDES ---
             Container(
               width: double.infinity,
               padding: EdgeInsets.symmetric(vertical: isMobile ? 15 : 25),
@@ -81,10 +83,10 @@ class _MainNavigationState extends State<MainNavigation> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _socialIconButton(Icons.facebook, const Color(0xFF1877F2),
+                      _socialCircleBtn(Icons.facebook, const Color(0xFF1877F2),
                           "https://www.facebook.com/TylasSweet"),
                       const SizedBox(width: 15),
-                      _socialIconButton(Icons.music_note, Colors.black,
+                      _socialCircleBtn(Icons.music_note, Colors.black,
                           "https://www.tiktok.com/@tylas.sweet"),
                     ],
                   ),
@@ -92,116 +94,117 @@ class _MainNavigationState extends State<MainNavigation> {
               ),
             ),
 
-            // BARRA DE NAVEGACIÓN CON 4 PESTAÑAS
+            // --- BARRA DE NAVEGACIÓN (RESPONSIVA) ---
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _navButton("Pasteles", Icons.cake, 0, isMobile),
-                    const SizedBox(width: 15),
-                    _navButton("Postres", Icons.icecream_outlined, 1, isMobile),
-                    const SizedBox(width: 15),
-                    _navButton("Nosotros", Icons.info_outline, 2, isMobile),
-                    const SizedBox(width: 15),
-                    _navButton("Reseñas", Icons.star_rate, 3, isMobile),
+                    _navItem("Pasteles", Icons.cake, 0),
+                    _navItem("Postres", Icons.icecream_outlined, 1),
+                    _navItem("Nosotros", Icons.info_outline, 2),
+                    _navItem("Reseñas", Icons.star_rate, 3),
                   ],
                 ),
               ),
             ),
             const Divider(height: 1, color: Colors.black12),
 
+            // --- CONTENIDO DE LA PÁGINA ---
             Expanded(child: _pages[_selectedIndex]),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _launchWhatsApp("¡Hola! Quiero hacer una consulta."),
+        onPressed: () => _launchWhatsApp(
+            "¡Hola Tylas Sweet! Quisiera una cotización general."),
         backgroundColor: const Color(0xFF25D366),
         child: const Icon(Icons.chat, color: Colors.white),
       ),
     );
   }
 
-  Widget _socialIconButton(IconData icon, Color color, String url) {
+  Widget _socialCircleBtn(IconData icon, Color color, String url) {
     return InkWell(
       onTap: () => _launchSocial(url),
       child: Container(
-        padding: const EdgeInsets.all(6),
-        decoration:
-            const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
+            ]),
         child: Icon(icon, color: color, size: 22),
       ),
     );
   }
 
-  Widget _navButton(String text, IconData icon, int index, bool isMobile) {
-    bool isSelected = _selectedIndex == index;
-    return InkWell(
+  Widget _navItem(String text, IconData icon, int index) {
+    bool sel = _selectedIndex == index;
+    return GestureDetector(
       onTap: () => setState(() => _selectedIndex = index),
-      child: Column(
-        children: [
-          Icon(icon, color: isSelected ? Colors.pink : Colors.grey, size: 22),
-          Text(text,
-              style: TextStyle(
-                  fontSize: 12,
-                  color: isSelected ? Colors.pink : Colors.grey,
-                  fontWeight:
-                      isSelected ? FontWeight.bold : FontWeight.normal)),
-        ],
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: sel ? Colors.pink.withOpacity(0.1) : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: sel ? Colors.pink : Colors.grey, size: 20),
+            const SizedBox(width: 5),
+            Text(text,
+                style: TextStyle(
+                    color: sel ? Colors.pink : Colors.grey,
+                    fontWeight: sel ? FontWeight.bold : FontWeight.normal)),
+          ],
+        ),
       ),
     );
   }
 }
 
-// --- PÁGINA DE POSTRES (CUPCAKES, FLAN, CHOCOFLAN) ---
+// --- PÁGINA: POSTRES (NUEVA) ---
 class DessertsPage extends StatelessWidget {
   const DessertsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // IMPORTANTE: Aquí usamos assets locales para que no fallen las fotos
     final List<Map<String, String>> desserts = [
       {
         "nombre": "Cupcakes Gourmet",
-        "imagen":
-            "http://googleusercontent.com/image_collection/image_retrieval/6145759225366623390_0",
-        "tipo": "Cupcakes"
+        "img": "assets/images/postre (1).jpeg",
+        "tipo": "Pack x6 / x12"
       },
       {
         "nombre": "Flan de Leche",
-        "imagen":
-            "http://googleusercontent.com/image_collection/image_retrieval/1503219935099500571_1",
-        "tipo": "Flan"
+        "img": "assets/images/postre (2).jpeg",
+        "tipo": "Tradicional"
       },
       {
-        "nombre": "Chocoflan (Imposible)",
-        "imagen":
-            "http://googleusercontent.com/image_collection/image_retrieval/7797657061751105560_2",
-        "tipo": "Especialidad"
+        "nombre": "Chocoflan",
+        "img": "assets/images/postre (3).jpeg",
+        "tipo": "Pastel Imposible"
       },
       {
-        "nombre": "Cupcakes Decorados",
-        "imagen":
-            "http://googleusercontent.com/image_collection/image_retrieval/6145759225366623390_3",
-        "tipo": "Cupcakes"
-      },
-      {
-        "nombre": "Flan Casero",
-        "imagen":
-            "http://googleusercontent.com/image_collection/image_retrieval/1503219935099500571_0",
-        "tipo": "Flan"
+        "nombre": "Postres Fríos",
+        "img": "assets/images/postre (4).jpeg",
+        "tipo": "Variedad"
       },
     ];
 
-    double screenWidth = MediaQuery.of(context).size.width;
-    int columns = screenWidth < 600 ? 2 : 3;
+    double width = MediaQuery.of(context).size.width;
+    int cols = width < 600 ? 2 : 4;
 
     return GridView.builder(
       padding: const EdgeInsets.all(15),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: columns,
+        crossAxisCount: cols,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
         childAspectRatio: 0.8,
@@ -209,26 +212,30 @@ class DessertsPage extends StatelessWidget {
       itemCount: desserts.length,
       itemBuilder: (context, index) {
         return InkWell(
-          onTap: () => _mostrarPedidoPostre(
-              context, desserts[index]['nombre']!, desserts[index]['imagen']!),
+          onTap: () => _modalPedido(
+              context, desserts[index]['nombre']!, desserts[index]['img']!),
           child: Card(
-            clipBehavior: Clip.antiAlias,
+            elevation: 2,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Expanded(
-                    child: Image.network(desserts[index]['imagen']!,
-                        fit: BoxFit.cover)),
+                    child: ClipRRect(
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(15)),
+                  child:
+                      Image.asset(desserts[index]['img']!, fit: BoxFit.cover),
+                )),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
                     children: [
                       Text(desserts[index]['nombre']!,
-                          textAlign: TextAlign.center,
                           style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 13)),
+                              fontWeight: FontWeight.bold, fontSize: 13),
+                          textAlign: TextAlign.center),
                       Text(desserts[index]['tipo']!,
                           style: const TextStyle(
                               color: Colors.pink, fontSize: 11)),
@@ -244,22 +251,24 @@ class DessertsPage extends StatelessWidget {
   }
 }
 
-// --- CATALOGO (PASTELES) ---
+// --- PÁGINA: CATÁLOGO (PASTELES) ---
 class CatalogPage extends StatelessWidget {
   const CatalogPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    int columns = screenWidth < 600 ? 2 : 5;
+    double width = MediaQuery.of(context).size.width;
+    int cols = width < 600 ? 2 : 5; // Responsivo: 2 en móvil, 5 en PC
+
     return GridView.builder(
       padding: const EdgeInsets.all(12),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: columns, crossAxisSpacing: 10, mainAxisSpacing: 10),
+          crossAxisCount: cols, crossAxisSpacing: 10, mainAxisSpacing: 10),
       itemCount: 94,
       itemBuilder: (context, index) {
         return InkWell(
-          onTap: () => _mostrarPedido(context, index + 1),
+          onTap: () => _modalPedido(context, "Pastel #${index + 1}",
+              "assets/images/postre (${index + 1}).jpeg"),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: Image.asset("assets/images/postre (${index + 1}).jpeg",
@@ -271,56 +280,92 @@ class CatalogPage extends StatelessWidget {
   }
 }
 
-// --- RESTO DE PÁGINAS ---
+// --- PÁGINA: NOSOTROS ---
 class AboutUsPage extends StatelessWidget {
   const AboutUsPage({super.key});
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(25),
+      padding: const EdgeInsets.all(30),
       child: Column(
         children: [
-          _sec("Misión", "Crear momentos dulces con sabor artesanal."),
-          _sec("Visión", "Ser la repostería favorita de Comayagua."),
+          _infoCard("Nuestros Orígenes",
+              "Tylas Sweet nació en Comayagua con la misión de endulzar tus mejores momentos con recetas artesanales y mucho amor."),
+          _infoCard("Misión",
+              "Crear obras de arte comestibles que deleiten el paladar y el corazón de nuestros clientes."),
+          _infoCard("Visión",
+              "Ser la repostería líder en innovación y sabor, llevando nuestra dulzura a cada rincón de Honduras."),
         ],
       ),
     );
   }
 
-  Widget _sec(String t, String s) => Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: Column(children: [
-        Text(t,
-            style: const TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.pink)),
-        Text(s, textAlign: TextAlign.center)
-      ]));
+  Widget _infoCard(String t, String c) => Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: Column(children: [
+          Text(t,
+              style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.pink)),
+          const SizedBox(height: 8),
+          Text(c,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 15, height: 1.4)),
+          const Divider(indent: 50, endIndent: 50, color: Colors.pinkOpacity),
+        ]),
+      );
 }
 
+// --- PÁGINA: RESEÑAS ---
 class ReviewsPage extends StatelessWidget {
   const ReviewsPage({super.key});
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text("¡Nuestros clientes nos aman! ⭐⭐⭐⭐⭐"));
+    final revs = [
+      {
+        "u": "Andrea M.",
+        "c": "¡El pastel de mi boda fue soñado! Recomendados al 100%."
+      },
+      {
+        "u": "Carlos R.",
+        "c": "Los mejores postres de Comayagua. El chocoflan es increíble."
+      },
+    ];
+    return ListView.builder(
+      padding: const EdgeInsets.all(20),
+      itemCount: revs.length,
+      itemBuilder: (context, i) => Card(
+        margin: const EdgeInsets.only(bottom: 15),
+        child: ListTile(
+          leading: const Icon(Icons.star, color: Color(0xFFD4AF37)),
+          title: Text(revs[i]['u']!,
+              style: const TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: Text(revs[i]['c']!),
+        ),
+      ),
+    );
   }
 }
 
-// --- LOGICA DE PEDIDOS ---
-void _mostrarPedidoPostre(BuildContext context, String nombre, String img) {
-  final nameCtrl = TextEditingController();
+// --- FUNCIONES DE APOYO ---
+void _modalPedido(BuildContext context, String nombre, String imgPath) {
+  final ctrl = TextEditingController();
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      title: Text("Pedir $nombre"),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: Text("Cotizar $nombre",
+          style: const TextStyle(color: Colors.pink, fontSize: 18)),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(img, height: 120, fit: BoxFit.cover)),
+              borderRadius: BorderRadius.circular(15),
+              child: Image.asset(imgPath, height: 140, fit: BoxFit.cover)),
           const SizedBox(height: 15),
           TextField(
-              controller: nameCtrl,
+              controller: ctrl,
               decoration: const InputDecoration(
                   labelText: "Tu Nombre", border: OutlineInputBorder())),
         ],
@@ -328,47 +373,13 @@ void _mostrarPedidoPostre(BuildContext context, String nombre, String img) {
       actions: [
         TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Cerrar")),
+            child: const Text("Cancelar")),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
               backgroundColor: Colors.pink, foregroundColor: Colors.white),
           onPressed: () => _launchWhatsApp(
-              "¡Hola Tylas Sweet! Soy ${nameCtrl.text}, me gustaría cotizar un pedido de: $nombre."),
-          child: const Text("Pedir"),
-        ),
-      ],
-    ),
-  );
-}
-
-void _mostrarPedido(BuildContext context, int index) {
-  final nameCtrl = TextEditingController();
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: const Text("Cotizar Pastel"),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.asset("assets/images/postre ($index).jpeg",
-                  height: 120, fit: BoxFit.cover)),
-          const SizedBox(height: 15),
-          TextField(
-              controller: nameCtrl,
-              decoration: const InputDecoration(
-                  labelText: "Tu Nombre", border: OutlineInputBorder())),
-        ],
-      ),
-      actions: [
-        TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cerrar")),
-        ElevatedButton(
-          onPressed: () => _launchWhatsApp(
-              "Hola Tylas Sweet! Soy ${nameCtrl.text}, me interesa el pastel #$index."),
-          child: const Text("Pedir"),
+              "Hola Tylas Sweet! Soy ${ctrl.text}, me interesa: $nombre"),
+          child: const Text("Enviar a WhatsApp"),
         ),
       ],
     ),
@@ -379,4 +390,8 @@ Future<void> _launchWhatsApp(String msg) async {
   final url =
       Uri.parse("https://wa.me/50499656622?text=${Uri.encodeComponent(msg)}");
   await launchUrl(url, mode: LaunchMode.externalApplication);
+}
+
+extension ColorExt on Color {
+  static const pinkOpacity = Color(0x22EC407A);
 }
