@@ -52,6 +52,10 @@ class _MainNavigationState extends State<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
+    // Obtenemos el tamaño de la pantalla para hacerlo responsivo
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -64,17 +68,21 @@ class _MainNavigationState extends State<MainNavigation> {
         child: SafeArea(
           child: Column(
             children: [
-              // --- EL LOGO NUEVO ---
+              // --- EL LOGO MAXIMIZADO ---
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.symmetric(
+                    vertical: 30), // Más espacio arriba y abajo
                 child: Hero(
                   tag: 'logo',
                   child: Image.asset(
                     "assets/images/logo.png", // Asegúrate de que el archivo se llame así
-                    height: 160,
-                    fit: BoxFit.contain,
+                    // AJUSTE DE TAMAÑO: Usamos un porcentaje del alto de la pantalla
+                    height: screenHeight *
+                        0.35, // Ocupará el 35% del alto de la pantalla (¡Muy grande!)
+                    width: screenWidth * 0.8, // Ocupará hasta el 80% del ancho
+                    fit: BoxFit.contain, // Mantiene la proporción sin recortar
                     errorBuilder: (context, error, stack) =>
-                        const Icon(Icons.cake, size: 80, color: Colors.pink),
+                        const Icon(Icons.cake, size: 100, color: Colors.pink),
                   ),
                 ),
               ),
