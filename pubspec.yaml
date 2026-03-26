@@ -1,30 +1,28 @@
 name: tylas_sweet
-description: "Catalogo Tylas Sweet Premium"
+description: "Web de repostería premium con radio en vivo"
 publish_to: 'none'
+
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.1.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  
-  # LIBRERÍAS DE MAGIA DE DISEÑO (Añadidas aquí)
-  google_fonts: ^6.1.0          # Fuentes elegantes
-  just_audio: ^0.9.36  # <--- Agrega esta línea
-  url_launcher: ^6.2.1          # Para WhatsApp
-  flutter_animate: ^4.2.0+1     # Animaciones increíbles
-  flutter_staggered_animations: ^1.1.1 # Animación de la galería
+  url_launcher: ^6.3.0
+  google_fonts: ^6.2.1
+  just_audio: ^0.9.36 # <--- Librería para el stream de radio
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.0
+  flutter_lints: ^4.0.0
 
 flutter:
   uses-material-design: true
+
   assets:
+    - assets/images/logo.png
     - assets/images/
-    # Asegúrate de tener tu logo.png aquí dentro de assets/images/
