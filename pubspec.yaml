@@ -27,3 +27,4 @@ flutter:
   assets:
     - assets/images/logo.png
     - assets/images/ # Esto incluye todas tus fotos postre (1).jpeg, etc.
+    - assets/postres/

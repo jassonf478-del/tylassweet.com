@@ -83,16 +83,20 @@ class _MainNavigationState extends State<MainNavigation> {
       backgroundColor: const Color(0xFFFFF8F0),
       body: Stack(
         children: [
-          // --- CONTENIDO (CATÁLOGO) ---
+          // --- CONTENIDO CON ANIMACIÓN ---
           Padding(
-            // CORRECCIÓN AQUÍ: EdgeInsets.only en lugar de .top
             padding: const EdgeInsets.only(top: 90),
-            child: _selectedIndex == 0
-                ? const CatalogGrid()
-                : const Center(child: Text("Sección de Postres próximamente")),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 500),
+              child: _selectedIndex == 0
+                  ? const DynamicGrid(
+                      key: ValueKey(0), folder: "images", prefix: "postre")
+                  : const DynamicGrid(
+                      key: ValueKey(1), folder: "postres", prefix: ""),
+            ),
           ),
 
-          // --- HEADER DINÁMICO GLASS ---
+          // --- HEADER GLASS INTEGRADO ---
           Positioned(
             top: 15,
             left: 15,
@@ -109,34 +113,23 @@ class _MainNavigationState extends State<MainNavigation> {
                     borderRadius: BorderRadius.circular(50),
                     border:
                         Border.all(color: Colors.white.withValues(alpha: 0.4)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 15,
-                      )
-                    ],
                   ),
                   child: Row(
                     children: [
-                      Image.asset(
-                        "assets/images/logo.png",
-                        height: 40,
-                        errorBuilder: (c, e, s) =>
-                            const Icon(Icons.cake, color: Colors.pink),
-                      ),
+                      Image.asset("assets/images/logo.png",
+                          height: 40,
+                          errorBuilder: (c, e, s) =>
+                              const Icon(Icons.cake, color: Colors.pink)),
                       const SizedBox(width: 10),
-                      const Text(
-                        "Tylas Sweet",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Colors.pink),
-                      ),
+                      Text("Tylas Sweet",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.pink[800])),
                       const Spacer(),
                       _miniNavBtn("Pasteles", 0),
                       _miniNavBtn("Postres", 1),
                       const SizedBox(width: 8),
-                      // Botón Radio
                       IconButton(
                         onPressed: _toggleRadio,
                         icon: _isLoading
@@ -167,37 +160,50 @@ class _MainNavigationState extends State<MainNavigation> {
     bool isSelected = _selectedIndex == index;
     return TextButton(
       onPressed: () => setState(() => _selectedIndex = index),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: isSelected ? Colors.pink : Colors.black54,
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-        ),
-      ),
+      child: Text(label,
+          style: TextStyle(
+              color: isSelected ? Colors.pink : Colors.black54,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
     );
   }
 }
 
-class CatalogGrid extends StatelessWidget {
-  const CatalogGrid({super.key});
+class DynamicGrid extends StatelessWidget {
+  final String folder;
+  final String prefix;
+  const DynamicGrid({super.key, required this.folder, required this.prefix});
+
   @override
   Widget build(BuildContext context) {
+    // Lista exacta de tus nuevos archivos en assets/postres
+    final List<String> postresNuevos = [
+      "chocoflan.png",
+      "chocoflan.jpg",
+      "Cupcake-Dessert.png",
+      "flan_napolitano.png"
+    ];
+
     return GridView.builder(
       padding: const EdgeInsets.all(15),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
       ),
-      itemCount: 15,
-      itemBuilder: (context, i) => ClipRRect(
-        borderRadius: BorderRadius.circular(15),
-        child: Image.asset(
-          "assets/images/postre (${i + 1}).jpeg",
-          fit: BoxFit.cover,
-          errorBuilder: (c, e, s) => Container(color: Colors.pink[50]),
-        ),
-      ),
+      itemCount: folder == "images" ? 60 : postresNuevos.length,
+      itemBuilder: (context, i) {
+        String path = folder == "images"
+            ? "assets/$folder/$prefix (${i + 1}).jpeg"
+            : "assets/$folder/${postresNuevos[i]}";
+
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: Image.asset(path,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) =>
+                  const SizedBox.shrink()),
+        );
+      },
     );
   }
 }
