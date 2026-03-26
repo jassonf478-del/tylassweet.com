@@ -10,7 +10,7 @@ class TylasSweetApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tylas Sweet - Repostería Profesional',
+      title: 'Tylas Sweet - Repostería Premium',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
@@ -43,15 +43,21 @@ class _MainNavigationState extends State<MainNavigation> {
     const ReviewsPage(),
   ];
 
+  // Función para abrir redes sociales
+  Future<void> _launchSocial(String url) async {
+    final Uri uri = Uri.parse(url);
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
-          // --- ENCABEZADO CON TU LOGO PNG GRANDE ---
+          // --- ENCABEZADO CON LOGO Y REDES SOCIALES ---
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 30),
+            padding: const EdgeInsets.only(top: 40, bottom: 20),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [Colors.pink.shade50, Colors.white],
@@ -62,21 +68,31 @@ class _MainNavigationState extends State<MainNavigation> {
             child: Column(
               children: [
                 Image.asset(
-                  "assets/images/logo.png", // <--- TU LOGO
-                  height: 180, // Tamaño grande para que llame la atención
+                  "assets/images/logo.png",
+                  height: 160,
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stack) =>
-                      const Icon(Icons.cake, size: 100, color: Colors.pink),
+                      const Icon(Icons.cake, size: 80, color: Colors.pink),
                 ),
-                const SizedBox(height: 10),
-                Text(
-                  "Repostería con amor en cada detalle",
-                  style: GoogleFonts.quicksand(
-                    fontSize: 16,
-                    color: Colors.pink.shade300,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 1.5,
-                  ),
+                const SizedBox(height: 15),
+                // --- BOTONES DE REDES SOCIALES ---
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _socialIconButton(
+                      icon: Icons.facebook,
+                      color: const Color(0xFF1877F2),
+                      onTap: () =>
+                          _launchSocial("https://www.facebook.com/TylasSweet"),
+                    ),
+                    const SizedBox(width: 20),
+                    _socialIconButton(
+                      icon: Icons.music_note, // Representa TikTok
+                      color: Colors.black,
+                      onTap: () =>
+                          _launchSocial("https://www.tiktok.com/@tylas.sweet"),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -96,14 +112,35 @@ class _MainNavigationState extends State<MainNavigation> {
           ),
           const Divider(height: 1, color: Colors.black12),
 
-          // --- CONTENIDO DINÁMICO ---
+          // --- CONTENIDO ---
           Expanded(child: _pages[_selectedIndex]),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _launchWhatsApp("¡Hola! Quiero información general."),
+        onPressed: () =>
+            _launchWhatsApp("¡Hola! Vi su página y quiero información."),
         backgroundColor: const Color(0xFF25D366),
         child: const Icon(Icons.chat, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _socialIconButton(
+      {required IconData icon,
+      required Color color,
+      required VoidCallback onTap}) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 5)
+          ],
+        ),
+        child: Icon(icon, color: color, size: 28),
       ),
     );
   }
@@ -130,7 +167,7 @@ class CatalogPage extends StatelessWidget {
     return GridView.builder(
       padding: const EdgeInsets.all(15),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3, // <--- 3 COLUMNAS SOLICITADAS
+        crossAxisCount: 3,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
       ),
@@ -138,21 +175,13 @@ class CatalogPage extends StatelessWidget {
       itemBuilder: (context, index) {
         return InkWell(
           onTap: () => _mostrarPedido(context, index + 1),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5)
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: Image.asset(
-                "assets/images/postre (${index + 1}).jpeg",
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stack) =>
-                    Container(color: Colors.pink.shade50),
-              ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(15),
+            child: Image.asset(
+              "assets/images/postre (${index + 1}).jpeg",
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stack) =>
+                  Container(color: Colors.pink.shade50),
             ),
           ),
         );
@@ -173,11 +202,16 @@ class AboutUsPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _section("Nuestros Orígenes",
-              "Tylas Sweet nació de la pasión por crear momentos dulces e inolvidables en Comayagua. Cada receta lleva consigo años de tradición y el deseo de ver una sonrisa en cada cliente."),
+              "Tylas Sweet nació de la pasión por crear momentos dulces e inolvidables en Comayagua. Cada receta lleva la tradición y el deseo de ver una sonrisa en cada cliente."),
           _section("Misión",
-              "Ofrecer repostería artesanal de la más alta calidad, combinando arte y sabor para celebrar los momentos más especiales de la vida."),
+              "Ofrecer repostería artesanal de alta calidad, combinando arte y sabor para celebrar los momentos más especiales de la vida."),
           _section("Visión",
-              "Convertirnos en la repostería preferida de las familias hondureñas, innovando en diseño y manteniendo el sabor casero que nos caracteriza."),
+              "Ser la repostería preferida de las familias hondureñas, innovando en diseño y manteniendo el sabor casero que nos caracteriza."),
+          const SizedBox(height: 20),
+          const Center(
+              child: Text("¡Síguenos en nuestras redes!",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.pink))),
         ],
       ),
     );
