@@ -19,9 +19,8 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build Web
-        # El comando clave para evitar errores de compilación
-        run: flutter build web --release
+      - - name: Build Web
+        run: flutter build web --release --base-href "/"
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
