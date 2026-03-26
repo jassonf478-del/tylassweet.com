@@ -10,15 +10,15 @@ class TylasSweetApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tylas Sweet',
+      title: 'Tylas Sweet - Repostería Premium',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFFF48FB1),
           primary: const Color(0xFFEC407A),
-          surface:
-              const Color(0xFFFFF8F0), // Corregido: 'background' es obsoleto
+          secondary: const Color(0xFFD4AF37),
+          surface: const Color(0xFFFFF8F0),
         ),
         textTheme: GoogleFonts.quicksandTextTheme(),
       ),
@@ -37,169 +37,375 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int _selectedIndex = 0;
 
-  // EFECTO: Fondo degradado dinámico según el día
-  List<Color> _getDailyGradient() {
-    int day = DateTime.now().weekday;
-    // Cambia los colores según el día para que la web siempre se sienta fresca
-    if (day == 1) return [Colors.pink.shade50, Colors.orange.shade50];
-    if (day == 5)
-      return [
-        const Color(0xFFFCE4EC),
-        const Color(0xFFF8BBD0)
-      ]; // Especial Viernes
-    return [const Color(0xFFFFF8F0), Colors.white];
+  // Lista de páginas del menú
+  final List<Widget> _pages = [
+    const CatalogPage(), // Pasteles (3-5 columnas)
+    const DessertsPage(), // Cupcakes, Flan, Chocoflan (CORREGIDA)
+    const AboutUsPage(), // Misión, Visión, Orígenes
+    const ReviewsPage(), // Reseñas de clientes
+  ];
+
+  Future<void> _launchSocial(String url) async {
+    final Uri uri = Uri.parse(url);
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
   @override
   Widget build(BuildContext context) {
-    // Obtenemos el tamaño de la pantalla para hacerlo responsivo
-    double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
+    bool isMobile = screenWidth < 600;
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: _getDailyGradient(),
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // --- EL LOGO MAXIMIZADO ---
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 30), // Más espacio arriba y abajo
-                child: Hero(
-                  tag: 'logo',
-                  child: Image.asset(
-                    "assets/images/logo.png", // Asegúrate de que el archivo se llame así
-                    // AJUSTE DE TAMAÑO: Usamos un porcentaje del alto de la pantalla
-                    height: screenHeight *
-                        0.35, // Ocupará el 35% del alto de la pantalla (¡Muy grande!)
-                    width: screenWidth * 0.8, // Ocupará hasta el 80% del ancho
-                    fit: BoxFit.contain, // Mantiene la proporción sin recortar
+      body: SafeArea(
+        child: Column(
+          children: [
+            // --- ENCABEZADO CON LOGO Y REDES ---
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(vertical: isMobile ? 15 : 25),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.pink.shade50, Colors.white],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+              child: Column(
+                children: [
+                  Image.asset(
+                    "assets/images/logo.png",
+                    height: isMobile ? 110 : 160,
+                    fit: BoxFit.contain,
                     errorBuilder: (context, error, stack) =>
-                        const Icon(Icons.cake, size: 100, color: Colors.pink),
+                        const Icon(Icons.cake, size: 60, color: Colors.pink),
                   ),
-                ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _socialCircleBtn(Icons.facebook, const Color(0xFF1877F2),
+                          "https://www.facebook.com/TylasSweet"),
+                      const SizedBox(width: 15),
+                      _socialCircleBtn(Icons.music_note, Colors.black,
+                          "https://www.tiktok.com/@tylas.sweet"),
+                    ],
+                  ),
+                ],
               ),
+            ),
 
-              // --- REPRODUCTOR DE MÚSICA (INTERFAZ) ---
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 30),
+            // --- BARRA DE NAVEGACIÓN (RESPONSIVA) ---
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withAlpha(180),
-                  borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: Colors.pink.withAlpha(50)),
-                ),
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                 child: Row(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.music_note, color: Colors.pink, size: 20),
-                    const SizedBox(width: 10),
-                    const Text("Música Ambiente",
-                        style: TextStyle(
-                            fontSize: 12, fontWeight: FontWeight.bold)),
-                    const SizedBox(width: 5),
-                    IconButton(
-                      icon: const Icon(Icons.play_circle_fill,
-                          color: Colors.pink),
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text(
-                                    "🎶 Reproduciendo dulces melodías...")));
-                      },
-                    ),
+                    _navItem("Pasteles", Icons.cake, 0),
+                    _navItem("Postres", Icons.icecream_outlined, 1),
+                    _navItem("Nosotros", Icons.info_outline, 2),
+                    _navItem("Reseñas", Icons.star_rate, 3),
                   ],
                 ),
               ),
+            ),
+            const Divider(height: 1, color: Colors.black12),
 
-              const SizedBox(height: 20),
-
-              // --- NAVEGACIÓN ---
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildTab("Pasteles", Icons.cake, 0),
-                    _buildTab("Postres", Icons.icecream, 1),
-                    _buildTab("Nosotros", Icons.auto_awesome, 2),
-                  ],
-                ),
-              ),
-
-              const Divider(indent: 40, endIndent: 40),
-
-              // --- GRID CON EFECTO DE SOMBRA ROSA ---
-              Expanded(
-                child: GridView.builder(
-                  padding: const EdgeInsets.all(15),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                  ),
-                  itemCount: 20, // Ajusta a tus fotos
-                  itemBuilder: (context, index) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.pink.withAlpha(30),
-                            blurRadius: 10,
-                            spreadRadius: 2,
-                          )
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(15),
-                        child: Image.asset(
-                          "assets/images/postre (${index + 1}).jpeg",
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
+            // --- CONTENIDO DE LA PÁGINA ---
+            Expanded(child: _pages[_selectedIndex]),
+          ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _launchWhatsApp(
+            "¡Hola Tylas Sweet! Quisiera una cotización general."),
+        backgroundColor: const Color(0xFF25D366),
+        child: const Icon(Icons.chat, color: Colors.white),
       ),
     );
   }
 
-  Widget _buildTab(String label, IconData icon, int index) {
-    bool isSelected = _selectedIndex == index;
+  Widget _socialCircleBtn(IconData icon, Color color, String url) {
+    return InkWell(
+      onTap: () => _launchSocial(url),
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
+            ]),
+        child: Icon(icon, color: color, size: 22),
+      ),
+    );
+  }
+
+  Widget _navItem(String text, IconData icon, int index) {
+    bool sel = _selectedIndex == index;
     return GestureDetector(
       onTap: () => setState(() => _selectedIndex = index),
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        margin: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.pink : Colors.transparent,
+          color: sel ? Colors.pink.withOpacity(0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
           children: [
-            Icon(icon,
-                color: isSelected ? Colors.white : Colors.grey, size: 18),
-            const SizedBox(width: 8),
-            Text(label,
+            Icon(icon, color: sel ? Colors.pink : Colors.grey, size: 20),
+            const SizedBox(width: 5),
+            Text(text,
                 style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.grey,
-                    fontWeight: FontWeight.bold)),
+                    color: sel ? Colors.pink : Colors.grey,
+                    fontWeight: sel ? FontWeight.bold : FontWeight.normal)),
           ],
         ),
       ),
     );
   }
+}
+
+// --- PÁGINA: POSTRES (SECCIÓN CORREGIDA) ---
+class DessertsPage extends StatelessWidget {
+  const DessertsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // IMPORTANTE: Aquí definimos qué fotos de tus assets usaremos para cada postre.
+    // He usado postre (1) al (5) de tu carpeta assets/images/.
+    final List<Map<String, String>> desserts = [
+      {
+        "nombre": "Cupcakes Gourmet",
+        "img": "assets/images/postre (1).jpeg",
+        "tipo": "Pack x6 / x12"
+      },
+      {
+        "nombre": "Flan de Leche",
+        "img": "assets/images/postre (2).jpeg",
+        "tipo": "Tradicional"
+      },
+      {
+        "nombre": "Chocoflan",
+        "img": "assets/images/postre (3).jpeg",
+        "tipo": "Pastel Imposible"
+      },
+      {
+        "nombre": "Cupcakes Decorados",
+        "img": "assets/images/postre (4).jpeg",
+        "tipo": "Personalizados"
+      },
+      {
+        "nombre": "Flan Casero",
+        "img": "assets/images/postre (5).jpeg",
+        "tipo": "Estilo Mamá"
+      },
+    ];
+
+    double width = MediaQuery.of(context).size.width;
+    int cols = width < 600 ? 2 : 4; // Responsivo: 2 en móvil, 4 en PC
+
+    return GridView.builder(
+      padding: const EdgeInsets.all(15),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: cols,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 0.8, // Hace las tarjetas un poco más altas que anchas
+      ),
+      itemCount: desserts.length,
+      itemBuilder: (context, index) {
+        return InkWell(
+          onTap: () => _modalPedido(
+              context, desserts[index]['nombre']!, desserts[index]['img']!),
+          child: Card(
+            elevation: 2,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                    child: ClipRRect(
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(15)),
+                  child: Image.asset(
+                    desserts[index]['img']!, // <--- USAMOS IMAGE.ASSET
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stack) => Container(
+                        color: Colors.pink.shade50,
+                        child:
+                            const Icon(Icons.broken_image, color: Colors.pink)),
+                  ),
+                )),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Text(desserts[index]['nombre']!,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 13),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis),
+                      Text(desserts[index]['tipo']!,
+                          style: const TextStyle(
+                              color: Colors.pink, fontSize: 11)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// --- PÁGINA: CATÁLOGO (PASTELES) ---
+class CatalogPage extends StatelessWidget {
+  const CatalogPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    int cols = width < 600 ? 2 : 5; // Responsivo: 2 en móvil, 5 en PC
+
+    return GridView.builder(
+      padding: const EdgeInsets.all(12),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: cols, crossAxisSpacing: 10, mainAxisSpacing: 10),
+      itemCount: 94,
+      itemBuilder: (context, index) {
+        return InkWell(
+          onTap: () => _modalPedido(context, "Pastel #${index + 1}",
+              "assets/images/postre (${index + 1}).jpeg"),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.asset("assets/images/postre (${index + 1}).jpeg",
+                fit: BoxFit.cover),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// --- PÁGINA: NOSOTROS ---
+class AboutUsPage extends StatelessWidget {
+  const AboutUsPage({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(30),
+      child: Column(
+        children: [
+          _infoCard("Nuestros Orígenes",
+              "Tylas Sweet nació en Comayagua con la misión de endulzar tus mejores momentos con recetas artesanales y mucho amor."),
+          _infoCard("Misión",
+              "Crear obras de arte comestibles que deleiten el paladar y el corazón de nuestros clientes."),
+          _infoCard("Visión",
+              "Ser la repostería líder en innovación y sabor, llevando nuestra dulzura a cada rincón de Honduras."),
+        ],
+      ),
+    );
+  }
+
+  Widget _infoCard(String t, String c) => Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: Column(children: [
+          Text(t,
+              style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.pink)),
+          const SizedBox(height: 8),
+          Text(c,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 15, height: 1.4)),
+          const Divider(indent: 50, endIndent: 50, color: Colors.pinkOpacity),
+        ]),
+      );
+}
+
+// --- PÁGINA: RESEÑAS ---
+class ReviewsPage extends StatelessWidget {
+  const ReviewsPage({super.key});
+  @override
+  Widget build(BuildContext context) {
+    final revs = [
+      {
+        "u": "Andrea M.",
+        "c": "¡El pastel de mi boda fue soñado! Recomendados al 100%."
+      },
+      {
+        "u": "Carlos R.",
+        "c": "Los mejores postres de Comayagua. El chocoflan es increíble."
+      },
+    ];
+    return ListView.builder(
+      padding: const EdgeInsets.all(20),
+      itemCount: revs.length,
+      itemBuilder: (context, i) => Card(
+        margin: const EdgeInsets.only(bottom: 15),
+        child: ListTile(
+          leading: const Icon(Icons.star, color: Color(0xFFD4AF37)),
+          title: Text(revs[i]['u']!,
+              style: const TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: Text(revs[i]['c']!),
+        ),
+      ),
+    );
+  }
+}
+
+// --- FUNCIONES DE APOYO ---
+void _modalPedido(BuildContext context, String nombre, String imgPath) {
+  final ctrl = TextEditingController();
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: Text("Cotizar $nombre",
+          style: const TextStyle(color: Colors.pink, fontSize: 18)),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: Image.asset(imgPath, height: 140, fit: BoxFit.cover)),
+          const SizedBox(height: 15),
+          TextField(
+              controller: ctrl,
+              decoration: const InputDecoration(
+                  labelText: "Tu Nombre", border: OutlineInputBorder())),
+        ],
+      ),
+      actions: [
+        TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancelar")),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.pink, foregroundColor: Colors.white),
+          onPressed: () => _launchWhatsApp(
+              "Hola Tylas Sweet! Soy ${ctrl.text}, me interesa: $nombre"),
+          child: const Text("Enviar a WhatsApp"),
+        ),
+      ],
+    ),
+  );
+}
+
+Future<void> _launchWhatsApp(String msg) async {
+  final url =
+      Uri.parse("https://wa.me/50499656622?text=${Uri.encodeComponent(msg)}");
+  await launchUrl(url, mode: LaunchMode.externalApplication);
+}
+
+extension ColorExt on Color {
+  static const pinkOpacity = Color(0x22EC407A);
 }
