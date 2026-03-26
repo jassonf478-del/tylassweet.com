@@ -18,7 +18,7 @@ class TylasSweetApp extends StatelessWidget {
           seedColor: const Color(0xFFF48FB1),
           primary: const Color(0xFFEC407A),
           secondary: const Color(0xFFD4AF37),
-          background: const Color(0xFFFFF8F0),
+          surface: const Color(0xFFFFF8F0),
         ),
         textTheme: GoogleFonts.quicksandTextTheme(),
       ),
@@ -37,7 +37,6 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int _selectedIndex = 0;
 
-  // Lista de páginas
   final List<Widget> _pages = [
     const CatalogPage(),
     const AboutUsPage(),
@@ -47,39 +46,77 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Image.asset("assets/images/logo.png",
-            height: 60,
-            errorBuilder: (context, error, stack) => Text("Tylas Sweet",
-                style: GoogleFonts.pacifico(color: Colors.pink))),
-        centerTitle: true,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50),
-          child: Container(
-            color: Colors.white,
-            child: TabBar(
-              onTap: (index) => setState(() => _selectedIndex = index),
-              indicatorColor: Colors.pink,
-              labelColor: Colors.pink,
-              unselectedLabelColor: Colors.grey,
-              tabs: const [
-                Tab(icon: Icon(Icons.cake), text: "Catálogo"),
-                Tab(icon: Icon(Icons.info_outline), text: "Nosotros"),
-                Tab(icon: Icon(Icons.star_rate), text: "Reseñas"),
+      body: Column(
+        children: [
+          // --- ENCABEZADO CON TU LOGO PNG GRANDE ---
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 30),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.pink.shade50, Colors.white],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+            child: Column(
+              children: [
+                Image.asset(
+                  "assets/images/logo.png", // <--- TU LOGO
+                  height: 180, // Tamaño grande para que llame la atención
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stack) =>
+                      const Icon(Icons.cake, size: 100, color: Colors.pink),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "Repostería con amor en cada detalle",
+                  style: GoogleFonts.quicksand(
+                    fontSize: 16,
+                    color: Colors.pink.shade300,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 1.5,
+                  ),
+                ),
               ],
-              controller: TabController(length: 3, vsync: Scaffold.of(context)),
             ),
           ),
-        ),
+
+          // --- BARRA DE NAVEGACIÓN ---
+          Container(
+            color: Colors.white,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _navButton("Catálogo", Icons.cake, 0),
+                _navButton("Nosotros", Icons.info_outline, 1),
+                _navButton("Reseñas", Icons.star_rate, 2),
+              ],
+            ),
+          ),
+          const Divider(height: 1, color: Colors.black12),
+
+          // --- CONTENIDO DINÁMICO ---
+          Expanded(child: _pages[_selectedIndex]),
+        ],
       ),
-      body: _pages[_selectedIndex],
       floatingActionButton: FloatingActionButton(
         onPressed: () => _launchWhatsApp("¡Hola! Quiero información general."),
         backgroundColor: const Color(0xFF25D366),
         child: const Icon(Icons.chat, color: Colors.white),
       ),
+    );
+  }
+
+  Widget _navButton(String text, IconData icon, int index) {
+    bool isSelected = _selectedIndex == index;
+    return TextButton.icon(
+      onPressed: () => setState(() => _selectedIndex = index),
+      icon: Icon(icon, color: isSelected ? Colors.pink : Colors.grey),
+      label: Text(text,
+          style: TextStyle(
+              color: isSelected ? Colors.pink : Colors.grey,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
     );
   }
 }
@@ -90,86 +127,79 @@ class CatalogPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          const SizedBox(height: 20),
-          Text("Elige tu diseño favorito",
-              style: GoogleFonts.quicksand(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.pink)),
-          const Text("Toca una imagen para cotizar",
-              style: TextStyle(color: Colors.grey)),
-          const SizedBox(height: 20),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3, // <--- SOLICITUD: 3 COLUMNAS
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-            ),
-            itemCount: 94,
-            itemBuilder: (context, index) {
-              return InkWell(
-                onTap: () => _mostrarPedido(context, index + 1),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Image.asset("assets/images/postre (${index + 1}).jpeg",
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stack) => Container(
-                          color: Colors.pink.shade50,
-                          child: const Icon(Icons.cake, color: Colors.pink))),
-                ),
-              );
-            },
-          ),
-          const SizedBox(height: 40),
-        ],
+    return GridView.builder(
+      padding: const EdgeInsets.all(15),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3, // <--- 3 COLUMNAS SOLICITADAS
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
       ),
+      itemCount: 94,
+      itemBuilder: (context, index) {
+        return InkWell(
+          onTap: () => _mostrarPedido(context, index + 1),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5)
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: Image.asset(
+                "assets/images/postre (${index + 1}).jpeg",
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stack) =>
+                    Container(color: Colors.pink.shade50),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
 
-// --- PÁGINA 2: NOSOTROS (MISIÓN, VISIÓN, ORÍGENES) ---
+// --- PÁGINA 2: NOSOTROS ---
 class AboutUsPage extends StatelessWidget {
   const AboutUsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(25),
+      padding: const EdgeInsets.all(30),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoSection("Nuestros Orígenes",
-              "Tylas Sweet nació en el corazón de Comayagua como un sueño familiar de endulzar los momentos más importantes de nuestra comunidad. Lo que comenzó en una cocina pequeña, hoy es una repostería que combina técnicas modernas con el sabor artesanal de casa."),
-          const SizedBox(height: 30),
-          _buildInfoSection("Misión",
-              "Crear experiencias dulces inolvidables mediante repostería de alta calidad, diseños personalizados y un servicio cálido que haga de cada celebración un evento mágico."),
-          const SizedBox(height: 30),
-          _buildInfoSection("Visión",
-              "Ser la repostería referente en Honduras, reconocida por nuestra creatividad artística y la excelencia en nuestros sabores, expandiendo la dulzura de Tylas Sweet a cada hogar."),
+          _section("Nuestros Orígenes",
+              "Tylas Sweet nació de la pasión por crear momentos dulces e inolvidables en Comayagua. Cada receta lleva consigo años de tradición y el deseo de ver una sonrisa en cada cliente."),
+          _section("Misión",
+              "Ofrecer repostería artesanal de la más alta calidad, combinando arte y sabor para celebrar los momentos más especiales de la vida."),
+          _section("Visión",
+              "Convertirnos en la repostería preferida de las familias hondureñas, innovando en diseño y manteniendo el sabor casero que nos caracteriza."),
         ],
       ),
     );
   }
 
-  Widget _buildInfoSection(String title, String content) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title,
-            style: GoogleFonts.quicksand(
-                fontSize: 24, fontWeight: FontWeight.bold, color: Colors.pink)),
-        const SizedBox(height: 10),
-        Text(content,
-            style: const TextStyle(
-                fontSize: 16, height: 1.5, color: Colors.black87)),
-        const Divider(height: 40, color: Colors.pinkOpacity),
-      ],
+  Widget _section(String title, String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 30),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title,
+              style: GoogleFonts.quicksand(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.pink)),
+          const SizedBox(height: 10),
+          Text(text,
+              style: const TextStyle(
+                  fontSize: 16, height: 1.5, color: Colors.black87)),
+        ],
+      ),
     );
   }
 }
@@ -183,49 +213,32 @@ class ReviewsPage extends StatelessWidget {
     final reviews = [
       {
         "user": "Andrea M.",
-        "comment": "El pastel de mi boda superó mis expectativas. ¡Hermoso!",
-        "stars": 5
+        "comment": "El pastel de mi boda fue soñado. ¡Mil gracias!"
       },
       {
         "user": "Carlos R.",
-        "comment":
-            "Excelente atención y el sabor de los cupcakes es de otro mundo.",
-        "stars": 5
+        "comment": "Los mejores postres de Comayagua sin duda."
       },
       {
         "user": "Lucía G.",
-        "comment": "Mi hija amó su pastel de cumpleaños. 100% recomendados.",
-        "stars": 5
+        "comment": "Diseños increíbles y el sabor es de otro mundo."
       },
     ];
-
     return ListView.builder(
       padding: const EdgeInsets.all(20),
       itemCount: reviews.length,
       itemBuilder: (context, index) {
         return Card(
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+              side: BorderSide(color: Colors.pink.withOpacity(0.1))),
           margin: const EdgeInsets.only(bottom: 15),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           child: ListTile(
-            contentPadding: const EdgeInsets.all(15),
-            leading: const CircleAvatar(
-                backgroundColor: Colors.pink,
-                child: Icon(Icons.person, color: Colors.white)),
-            title: Text(reviews[index]['user'] as String,
+            leading: const Icon(Icons.star, color: Color(0xFFD4AF37)),
+            title: Text(reviews[index]['user']!,
                 style: const TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                    children: List.generate(
-                        5,
-                        (i) => const Icon(Icons.star,
-                            size: 18, color: Color(0xFFD4AF37)))),
-                const SizedBox(height: 5),
-                Text(reviews[index]['comment'] as String),
-              ],
-            ),
+            subtitle: Text(reviews[index]['comment']!),
           ),
         );
       },
@@ -233,20 +246,24 @@ class ReviewsPage extends StatelessWidget {
   }
 }
 
-// --- FUNCIONES GLOBALES ---
+// --- FUNCIONES COMUNES ---
 void _mostrarPedido(BuildContext context, int index) {
-  final controller = TextEditingController();
+  final nameCtrl = TextEditingController();
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      title: const Text("Hacer Pedido"),
+      title: const Text("Cotizar Pastel"),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Image.asset("assets/images/postre ($index).jpeg", height: 100),
+          ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.asset("assets/images/postre ($index).jpeg",
+                  height: 120)),
+          const SizedBox(height: 15),
           TextField(
-              controller: controller,
-              decoration: const InputDecoration(labelText: "Tu nombre")),
+              controller: nameCtrl,
+              decoration: const InputDecoration(labelText: "Tu Nombre")),
         ],
       ),
       actions: [
@@ -255,8 +272,8 @@ void _mostrarPedido(BuildContext context, int index) {
             child: const Text("Cancelar")),
         ElevatedButton(
           onPressed: () => _launchWhatsApp(
-              "Hola! Soy ${controller.text}, me interesa el pastel #$index"),
-          child: const Text("Enviar"),
+              "Hola Tylas Sweet! Soy ${nameCtrl.text}, me interesa el pastel de la foto #$index."),
+          child: const Text("Pedir por WhatsApp"),
         ),
       ],
     ),
@@ -267,8 +284,4 @@ Future<void> _launchWhatsApp(String msg) async {
   final url =
       Uri.parse("https://wa.me/50499656622?text=${Uri.encodeComponent(msg)}");
   await launchUrl(url, mode: LaunchMode.externalApplication);
-}
-
-extension ColorExt on Color {
-  static const pinkOpacity = Color(0x22EC407A);
 }
