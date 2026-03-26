@@ -1,5 +1,5 @@
 name: tylas_sweet
-description: "Catalogo Tylas Sweet"
+description: "Catalogo Tylas Sweet Premium"
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -10,9 +10,12 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  # Librerías esenciales para el diseño y WhatsApp
-  google_fonts: ^6.1.0
-  url_launcher: ^6.2.1
+  
+  # LIBRERÍAS DE MAGIA DE DISEÑO (Añadidas aquí)
+  google_fonts: ^6.1.0          # Fuentes elegantes
+  url_launcher: ^6.2.1          # Para WhatsApp
+  flutter_animate: ^4.2.0+1     # Animaciones increíbles
+  flutter_staggered_animations: ^1.1.1 # Animación de la galería
 
 dev_dependencies:
   flutter_test:
@@ -23,3 +26,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    # Asegúrate de tener tu logo.png aquí dentro de assets/images/
