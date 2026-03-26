@@ -22,7 +22,6 @@ jobs:
         run: flutter pub get
 
       - name: Build Web
-        # Usamos el renderer html para evitar la rueda de carga infinita
         run: flutter build web --release --web-renderer html --base-href "/"
 
       - name: Deploy
