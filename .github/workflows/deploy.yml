@@ -4,6 +4,9 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,13 +17,13 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          # Dejamos que GitHub elija la última estable automáticamente
           
       - name: Install dependencies
         run: flutter pub get
 
       - name: Build Web
-        run: flutter build web --release --web-renderer html --base-href "/"
+        # Asegúrate de que no haya guiones triples (---) ni letras extra
+        run: flutter build web --release --base-href "/"
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
