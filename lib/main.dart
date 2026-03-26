@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() => runApp(const TylasSweetApp());
 
@@ -38,6 +39,13 @@ class _MainNavigationState extends State<MainNavigation> {
 
   final String radioUrl = "https://laradiodelmomento.com/stream";
 
+  Future<void> _launchURL(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      debugPrint("No se pudo abrir $url");
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -62,7 +70,7 @@ class _MainNavigationState extends State<MainNavigation> {
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Error de conexión")),
+            const SnackBar(content: Text("Error de conexión con la radio")),
           );
         }
       }
@@ -83,20 +91,26 @@ class _MainNavigationState extends State<MainNavigation> {
       backgroundColor: const Color(0xFFFFF8F0),
       body: Stack(
         children: [
-          // --- CONTENIDO CON ANIMACIÓN ---
+          // --- CONTENIDO ---
           Padding(
-            padding: const EdgeInsets.only(top: 90),
+            padding: const EdgeInsets.only(top: 90, bottom: 60),
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 500),
               child: _selectedIndex == 0
-                  ? const DynamicGrid(
-                      key: ValueKey(0), folder: "images", prefix: "postre")
-                  : const DynamicGrid(
-                      key: ValueKey(1), folder: "postres", prefix: ""),
+                  ? DynamicGrid(
+                      key: const ValueKey(0),
+                      folder: "images",
+                      prefix: "postre",
+                      onOrder: _launchURL)
+                  : DynamicGrid(
+                      key: const ValueKey(1),
+                      folder: "postres",
+                      prefix: "",
+                      onOrder: _launchURL),
             ),
           ),
 
-          // --- HEADER GLASS INTEGRADO ---
+          // --- HEADER GLASS ---
           Positioned(
             top: 15,
             left: 15,
@@ -121,15 +135,14 @@ class _MainNavigationState extends State<MainNavigation> {
                           errorBuilder: (c, e, s) =>
                               const Icon(Icons.cake, color: Colors.pink)),
                       const SizedBox(width: 10),
-                      Text("Tylas Sweet",
+                      const Text("Tylas Sweet",
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
-                              color: Colors.pink[800])),
+                              color: Colors.pink)),
                       const Spacer(),
                       _miniNavBtn("Pasteles", 0),
                       _miniNavBtn("Postres", 1),
-                      const SizedBox(width: 8),
                       IconButton(
                         onPressed: _toggleRadio,
                         icon: _isLoading
@@ -151,8 +164,45 @@ class _MainNavigationState extends State<MainNavigation> {
               ),
             ),
           ),
+
+          // --- FOOTER REDES SOCIALES ---
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 60,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.white.withValues(alpha: 0.9)
+                  ],
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _socialBtn(Icons.facebook, "https://facebook.com/tylassweet"),
+                  _socialBtn(
+                      Icons.camera_alt, "https://instagram.com/tylassweet"),
+                  _socialBtn(
+                      Icons.music_note, "https://www.tiktok.com/@tylas.sweet"),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _socialBtn(IconData icon, String url) {
+    return IconButton(
+      icon: Icon(icon, color: Colors.pink[300], size: 28),
+      onPressed: () => _launchURL(url),
     );
   }
 
@@ -171,11 +221,16 @@ class _MainNavigationState extends State<MainNavigation> {
 class DynamicGrid extends StatelessWidget {
   final String folder;
   final String prefix;
-  const DynamicGrid({super.key, required this.folder, required this.prefix});
+  final Function(String) onOrder;
+
+  const DynamicGrid(
+      {super.key,
+      required this.folder,
+      required this.prefix,
+      required this.onOrder});
 
   @override
   Widget build(BuildContext context) {
-    // Lista exacta de tus nuevos archivos en assets/postres
     final List<String> postresNuevos = [
       "chocoflan.png",
       "chocoflan.jpg",
@@ -190,18 +245,40 @@ class DynamicGrid extends StatelessWidget {
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
       ),
-      itemCount: folder == "images" ? 60 : postresNuevos.length,
+      itemCount: folder == "images" ? 50 : postresNuevos.length,
       itemBuilder: (context, i) {
-        String path = folder == "images"
-            ? "assets/$folder/$prefix (${i + 1}).jpeg"
-            : "assets/$folder/${postresNuevos[i]}";
+        String fileName =
+            folder == "images" ? "$prefix (${i + 1}).jpeg" : postresNuevos[i];
+        String path = "assets/$folder/$fileName";
 
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(15),
-          child: Image.asset(path,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) =>
-                  const SizedBox.shrink()),
+        return Stack(
+          children: [
+            Positioned.fill(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: Image.asset(path,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        const SizedBox.shrink()),
+              ),
+            ),
+            // Botón de encargo
+            Positioned(
+              bottom: 8,
+              right: 8,
+              child: InkWell(
+                onTap: () => onOrder(
+                    "https://wa.me/50499656622?text=Hola! Quiero encargar el postre: $fileName"),
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: const BoxDecoration(
+                      color: Colors.green, shape: BoxShape.circle),
+                  child: const Icon(Icons.chat_bubble_outline,
+                      color: Colors.white, size: 18), // Icono corregido
+                ),
+              ),
+            ),
+          ],
         );
       },
     );
