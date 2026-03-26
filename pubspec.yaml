@@ -13,6 +13,7 @@ dependencies:
   
   # LIBRERÍAS DE MAGIA DE DISEÑO (Añadidas aquí)
   google_fonts: ^6.1.0          # Fuentes elegantes
+  just_audio: ^0.9.36  # <--- Agrega esta línea
   url_launcher: ^6.2.1          # Para WhatsApp
   flutter_animate: ^4.2.0+1     # Animaciones increíbles
   flutter_staggered_animations: ^1.1.1 # Animación de la galería
