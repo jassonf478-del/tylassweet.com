@@ -38,7 +38,8 @@ class _MainNavigationState extends State<MainNavigation> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    const CatalogPage(),
+    const CatalogPage(), // Pasteles
+    const DessertsPage(), // NUEVA: Cupcakes, Flan, etc.
     const AboutUsPage(),
     const ReviewsPage(),
   ];
@@ -50,19 +51,16 @@ class _MainNavigationState extends State<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    // DETECTAMOS EL ANCHO DE LA PANTALLA
     double screenWidth = MediaQuery.of(context).size.width;
     bool isMobile = screenWidth < 600;
 
     return Scaffold(
       body: SafeArea(
-        // Evita que el contenido choque con la muesca/notch del celular
         child: Column(
           children: [
-            // --- ENCABEZADO RESPONSIVO ---
             Container(
               width: double.infinity,
-              padding: EdgeInsets.symmetric(vertical: isMobile ? 15 : 30),
+              padding: EdgeInsets.symmetric(vertical: isMobile ? 15 : 25),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [Colors.pink.shade50, Colors.white],
@@ -74,7 +72,7 @@ class _MainNavigationState extends State<MainNavigation> {
                 children: [
                   Image.asset(
                     "assets/images/logo.png",
-                    height: isMobile ? 120 : 180, // Logo más pequeño en celular
+                    height: isMobile ? 110 : 160,
                     fit: BoxFit.contain,
                     errorBuilder: (context, error, stack) =>
                         const Icon(Icons.cake, size: 60, color: Colors.pink),
@@ -94,29 +92,33 @@ class _MainNavigationState extends State<MainNavigation> {
               ),
             ),
 
-            // --- BARRA DE NAVEGACIÓN ADAPTADA ---
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              color: Colors.white,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _navButton("Catálogo", Icons.cake, 0, isMobile),
-                  _navButton("Nosotros", Icons.info_outline, 1, isMobile),
-                  _navButton("Reseñas", Icons.star_rate, 2, isMobile),
-                ],
+            // BARRA DE NAVEGACIÓN CON 4 PESTAÑAS
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _navButton("Pasteles", Icons.cake, 0, isMobile),
+                    const SizedBox(width: 15),
+                    _navButton("Postres", Icons.icecream_outlined, 1, isMobile),
+                    const SizedBox(width: 15),
+                    _navButton("Nosotros", Icons.info_outline, 2, isMobile),
+                    const SizedBox(width: 15),
+                    _navButton("Reseñas", Icons.star_rate, 3, isMobile),
+                  ],
+                ),
               ),
             ),
             const Divider(height: 1, color: Colors.black12),
 
-            // --- CONTENIDO ---
             Expanded(child: _pages[_selectedIndex]),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _launchWhatsApp(
-            "¡Hola! Vi su catálogo móvil y quiero información."),
+        onPressed: () => _launchWhatsApp("¡Hola! Quiero hacer una consulta."),
         backgroundColor: const Color(0xFF25D366),
         child: const Icon(Icons.chat, color: Colors.white),
       ),
@@ -128,14 +130,9 @@ class _MainNavigationState extends State<MainNavigation> {
       onTap: () => _launchSocial(url),
       child: Container(
         padding: const EdgeInsets.all(6),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 3)
-          ],
-        ),
-        child: Icon(icon, color: color, size: 24),
+        decoration:
+            const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+        child: Icon(icon, color: color, size: 22),
       ),
     );
   }
@@ -145,68 +142,128 @@ class _MainNavigationState extends State<MainNavigation> {
     return InkWell(
       onTap: () => setState(() => _selectedIndex = index),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon,
-              color: isSelected ? Colors.pink : Colors.grey,
-              size: isMobile ? 22 : 26),
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: isMobile ? 12 : 14,
-              color: isSelected ? Colors.pink : Colors.grey,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            ),
-          ),
-          if (isSelected)
-            Container(
-                height: 2,
-                width: 20,
-                color: Colors.pink,
-                margin: const EdgeInsets.only(top: 2)),
+          Icon(icon, color: isSelected ? Colors.pink : Colors.grey, size: 22),
+          Text(text,
+              style: TextStyle(
+                  fontSize: 12,
+                  color: isSelected ? Colors.pink : Colors.grey,
+                  fontWeight:
+                      isSelected ? FontWeight.bold : FontWeight.normal)),
         ],
       ),
     );
   }
 }
 
-// --- CATÁLOGO ADAPTATIVO ---
+// --- PÁGINA DE POSTRES (CUPCAKES, FLAN, CHOCOFLAN) ---
+class DessertsPage extends StatelessWidget {
+  const DessertsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final List<Map<String, String>> desserts = [
+      {
+        "nombre": "Cupcakes Gourmet",
+        "imagen":
+            "http://googleusercontent.com/image_collection/image_retrieval/6145759225366623390_0",
+        "tipo": "Cupcakes"
+      },
+      {
+        "nombre": "Flan de Leche",
+        "imagen":
+            "http://googleusercontent.com/image_collection/image_retrieval/1503219935099500571_1",
+        "tipo": "Flan"
+      },
+      {
+        "nombre": "Chocoflan (Imposible)",
+        "imagen":
+            "http://googleusercontent.com/image_collection/image_retrieval/7797657061751105560_2",
+        "tipo": "Especialidad"
+      },
+      {
+        "nombre": "Cupcakes Decorados",
+        "imagen":
+            "http://googleusercontent.com/image_collection/image_retrieval/6145759225366623390_3",
+        "tipo": "Cupcakes"
+      },
+      {
+        "nombre": "Flan Casero",
+        "imagen":
+            "http://googleusercontent.com/image_collection/image_retrieval/1503219935099500571_0",
+        "tipo": "Flan"
+      },
+    ];
+
+    double screenWidth = MediaQuery.of(context).size.width;
+    int columns = screenWidth < 600 ? 2 : 3;
+
+    return GridView.builder(
+      padding: const EdgeInsets.all(15),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: columns,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 0.8,
+      ),
+      itemCount: desserts.length,
+      itemBuilder: (context, index) {
+        return InkWell(
+          onTap: () => _mostrarPedidoPostre(
+              context, desserts[index]['nombre']!, desserts[index]['imagen']!),
+          child: Card(
+            clipBehavior: Clip.antiAlias,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                    child: Image.network(desserts[index]['imagen']!,
+                        fit: BoxFit.cover)),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Text(desserts[index]['nombre']!,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 13)),
+                      Text(desserts[index]['tipo']!,
+                          style: const TextStyle(
+                              color: Colors.pink, fontSize: 11)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// --- CATALOGO (PASTELES) ---
 class CatalogPage extends StatelessWidget {
   const CatalogPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    // REGLA: 2 columnas en celular (<600px), 4 en pantallas medianas, 5 en PC grande
-    int columns = screenWidth < 600 ? 2 : (screenWidth < 900 ? 3 : 5);
-
+    int columns = screenWidth < 600 ? 2 : 5;
     return GridView.builder(
       padding: const EdgeInsets.all(12),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: columns,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-      ),
+          crossAxisCount: columns, crossAxisSpacing: 10, mainAxisSpacing: 10),
       itemCount: 94,
       itemBuilder: (context, index) {
         return InkWell(
           onTap: () => _mostrarPedido(context, index + 1),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: Image.asset(
-                "assets/images/postre (${index + 1}).jpeg",
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stack) =>
-                    Container(color: Colors.pink.shade50),
-              ),
-            ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.asset("assets/images/postre (${index + 1}).jpeg",
+                fit: BoxFit.cover),
           ),
         );
       },
@@ -214,94 +271,53 @@ class CatalogPage extends StatelessWidget {
   }
 }
 
-// --- PÁGINAS DE NOSOTROS Y RESEÑAS (Ya son flexibles) ---
+// --- RESTO DE PÁGINAS ---
 class AboutUsPage extends StatelessWidget {
   const AboutUsPage({super.key});
-
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(25),
       child: Column(
         children: [
-          _section("Nuestros Orígenes",
-              "Tylas Sweet nació de la pasión por crear momentos dulces e inolvidables en Comayagua."),
-          _section("Misión",
-              "Ofrecer repostería artesanal de alta calidad, celebrando cada momento especial."),
-          _section("Visión",
-              "Ser la repostería favorita de Honduras, innovando siempre en sabor y arte."),
+          _sec("Misión", "Crear momentos dulces con sabor artesanal."),
+          _sec("Visión", "Ser la repostería favorita de Comayagua."),
         ],
       ),
     );
   }
 
-  Widget _section(String title, String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 25),
-      child: Column(
-        children: [
-          Text(title,
-              style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.pink)),
-          const SizedBox(height: 5),
-          Text(text,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 15, height: 1.4)),
-        ],
-      ),
-    );
-  }
+  Widget _sec(String t, String s) => Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(children: [
+        Text(t,
+            style: const TextStyle(
+                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.pink)),
+        Text(s, textAlign: TextAlign.center)
+      ]));
 }
 
 class ReviewsPage extends StatelessWidget {
   const ReviewsPage({super.key});
-
   @override
   Widget build(BuildContext context) {
-    final reviews = [
-      {"user": "Andrea M.", "comment": "¡El mejor pastel de Comayagua!"},
-      {"user": "Carlos R.", "comment": "Diseños increíbles y sabor único."},
-    ];
-    return ListView.builder(
-      padding: const EdgeInsets.all(15),
-      itemCount: reviews.length,
-      itemBuilder: (context, index) {
-        return Card(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: Colors.pink.withOpacity(0.1))),
-          child: ListTile(
-            leading: const Icon(Icons.star, color: Color(0xFFD4AF37), size: 20),
-            title: Text(reviews[index]['user']!,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-            subtitle: Text(reviews[index]['comment']!,
-                style: const TextStyle(fontSize: 13)),
-          ),
-        );
-      },
-    );
+    return const Center(child: Text("¡Nuestros clientes nos aman! ⭐⭐⭐⭐⭐"));
   }
 }
 
-// --- FUNCIONES ---
-void _mostrarPedido(BuildContext context, int index) {
+// --- LOGICA DE PEDIDOS ---
+void _mostrarPedidoPostre(BuildContext context, String nombre, String img) {
   final nameCtrl = TextEditingController();
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      title: const Text("Cotizar Pastel"),
+      title: Text("Pedir $nombre"),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: Image.asset("assets/images/postre ($index).jpeg",
-                  height: 150, fit: BoxFit.cover)),
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(img, height: 120, fit: BoxFit.cover)),
           const SizedBox(height: 15),
           TextField(
               controller: nameCtrl,
@@ -316,6 +332,40 @@ void _mostrarPedido(BuildContext context, int index) {
         ElevatedButton(
           style: ElevatedButton.styleFrom(
               backgroundColor: Colors.pink, foregroundColor: Colors.white),
+          onPressed: () => _launchWhatsApp(
+              "¡Hola Tylas Sweet! Soy ${nameCtrl.text}, me gustaría cotizar un pedido de: $nombre."),
+          child: const Text("Pedir"),
+        ),
+      ],
+    ),
+  );
+}
+
+void _mostrarPedido(BuildContext context, int index) {
+  final nameCtrl = TextEditingController();
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text("Cotizar Pastel"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.asset("assets/images/postre ($index).jpeg",
+                  height: 120, fit: BoxFit.cover)),
+          const SizedBox(height: 15),
+          TextField(
+              controller: nameCtrl,
+              decoration: const InputDecoration(
+                  labelText: "Tu Nombre", border: OutlineInputBorder())),
+        ],
+      ),
+      actions: [
+        TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cerrar")),
+        ElevatedButton(
           onPressed: () => _launchWhatsApp(
               "Hola Tylas Sweet! Soy ${nameCtrl.text}, me interesa el pastel #$index."),
           child: const Text("Pedir"),
