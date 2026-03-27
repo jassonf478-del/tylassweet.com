@@ -40,7 +40,6 @@ class _MainNavigationState extends State<MainNavigation> {
   bool _isPlaying = false;
   bool _isLoading = false;
 
-  // URL ACTUALIZADA SEGÚN TU SOLICITUD
   final String radioUrl = "https://radio.worldkast.com:8034/stream";
 
   Future<void> _launchURL(String url) async {
@@ -141,9 +140,7 @@ class _MainNavigationState extends State<MainNavigation> {
         setState(() => _isLoading = false);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content:
-                    Text("Error conectando a la radio. Intenta de nuevo.")),
+            const SnackBar(content: Text("Error conectando a la radio.")),
           );
         }
       }
@@ -195,7 +192,31 @@ class _MainNavigationState extends State<MainNavigation> {
                             folder: "postres",
                             prefix: "",
                             onOrder: _showOrderDialog),
-                    const SizedBox(height: 50),
+
+                    // --- SECCIÓN DE COPYRIGHT ---
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 40),
+                      child: Column(
+                        children: [
+                          const Divider(
+                              color: Colors.white10, indent: 50, endIndent: 50),
+                          const SizedBox(height: 10),
+                          const Text(
+                            "© 2026 Tylas Sweet. Todos los derechos reservados.",
+                            style:
+                                TextStyle(color: Colors.white38, fontSize: 11),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "By Jasson Flores | jassonf478@gmail.com",
+                            style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.5),
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -297,9 +318,12 @@ class DynamicGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> list = folder == "images"
-        ? List.generate(40, (i) => "$prefix (${i + 1}).jpeg")
-        : ["chocoflan.png", "Cupcake-Dessert.png", "flan_napolitano.png"];
+    List<String> list = [];
+    if (folder == "images") {
+      list = List.generate(60, (i) => "$prefix (${i + 1}).jpeg");
+    } else {
+      list = ["chocoflan.png", "Cupcake-Dessert.png", "flan_napolitano.png"];
+    }
 
     return GridView.builder(
       shrinkWrap: true,
@@ -319,7 +343,7 @@ class DynamicGrid extends StatelessWidget {
                     child: Image.asset("assets/$folder/${list[i]}",
                         fit: BoxFit.cover,
                         errorBuilder: (c, e, s) =>
-                            Container(color: Colors.brown))),
+                            Container(color: Colors.brown[900]))),
                 Positioned(
                   bottom: 5,
                   right: 5,
