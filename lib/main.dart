@@ -40,7 +40,8 @@ class _MainNavigationState extends State<MainNavigation> {
   bool _isPlaying = false;
   bool _isLoading = false;
 
-  final String radioUrl = "https://laradiodelmomento.com/stream";
+  // URL ACTUALIZADA SEGÚN TU SOLICITUD
+  final String radioUrl = "https://radio.worldkast.com:8034/stream";
 
   Future<void> _launchURL(String url) async {
     final Uri uri = Uri.parse(url);
@@ -49,7 +50,6 @@ class _MainNavigationState extends State<MainNavigation> {
     }
   }
 
-  // --- FORMULARIO DE PEDIDO PARA COMAYAGUA ---
   void _showOrderDialog(String dessertName) {
     final TextEditingController nameController = TextEditingController();
     final TextEditingController addressController = TextEditingController();
@@ -101,7 +101,7 @@ class _MainNavigationState extends State<MainNavigation> {
               if (nameController.text.isNotEmpty &&
                   addressController.text.isNotEmpty) {
                 String msg =
-                    "¡Hola Tylas Sweet! 🍰\nSoy: ${nameController.text}\nDirección: ${addressController.text}\nPostre: $dessertName\n¿Tienen disponible?";
+                    "¡Hola Tylas Sweet! 🍰\nSoy: ${nameController.text}\nDirección: ${addressController.text}\nMe interesa el postre: $dessertName\n¿Tienen disponible?";
                 _launchURL(
                     "https://wa.me/50499656622?text=${Uri.encodeComponent(msg)}");
                 Navigator.pop(context);
@@ -115,38 +115,39 @@ class _MainNavigationState extends State<MainNavigation> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _initRadio();
-  }
-
-  @override
   void dispose() {
     _audioPlayer.dispose();
     super.dispose();
   }
 
-  Future<void> _initRadio() async {
-    try {
-      await _audioPlayer.setUrl(radioUrl);
-    } catch (e) {
-      debugPrint("Radio Offline");
-    }
-  }
-
   void _toggleRadio() async {
     if (_isPlaying) {
-      await _audioPlayer.pause();
+      await _audioPlayer.stop();
+      setState(() => _isPlaying = false);
     } else {
       setState(() => _isLoading = true);
       try {
-        await _audioPlayer.play();
+        await _audioPlayer.setAudioSource(
+          AudioSource.uri(Uri.parse(radioUrl)),
+          preload: false,
+        );
+        _audioPlayer.play();
+        setState(() {
+          _isPlaying = true;
+          _isLoading = false;
+        });
       } catch (e) {
-        debugPrint("Error");
+        debugPrint("Error de Radio: $e");
+        setState(() => _isLoading = false);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content:
+                    Text("Error conectando a la radio. Intenta de nuevo.")),
+          );
+        }
       }
-      setState(() => _isLoading = false);
     }
-    setState(() => _isPlaying = !_isPlaying);
   }
 
   @override
@@ -157,15 +158,11 @@ class _MainNavigationState extends State<MainNavigation> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF3E2723),
-              Color(0xFF1B0F0D)
-            ], // Chocolate Profundo
+            colors: [Color(0xFF3E2723), Color(0xFF1B0F0D)],
           ),
         ),
         child: Stack(
           children: [
-            // CONTENIDO
             Padding(
               padding: const EdgeInsets.only(top: 100),
               child: SingleChildScrollView(
@@ -203,8 +200,6 @@ class _MainNavigationState extends State<MainNavigation> {
                 ),
               ),
             ),
-
-            // HEADER INTEGRADO (CORREGIDO)
             Positioned(
               top: 15,
               left: 10,
@@ -302,7 +297,6 @@ class DynamicGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Lista basada en tus capturas de assets (Imagen 177777.png)
     final List<String> list = folder == "images"
         ? List.generate(40, (i) => "$prefix (${i + 1}).jpeg")
         : ["chocoflan.png", "Cupcake-Dessert.png", "flan_napolitano.png"];
@@ -334,8 +328,7 @@ class DynamicGrid extends StatelessWidget {
                     decoration: const BoxDecoration(
                         color: Colors.green, shape: BoxShape.circle),
                     child: const Icon(Icons.chat_bubble_outline,
-                        color: Colors.white,
-                        size: 12), // Corregido Icons.whatsapp
+                        color: Colors.white, size: 12),
                   ),
                 ),
               ],
