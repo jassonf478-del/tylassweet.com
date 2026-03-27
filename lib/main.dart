@@ -58,23 +58,24 @@ class _MainNavigationState extends State<MainNavigation> {
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFFFFF3E0),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-        title: Column(
+        title: const Column(
+          // Añadido const para optimizar (Imagen 2000000.png)
           children: [
-            const Icon(Icons.cake_outlined, color: Color(0xFFD81B60), size: 40),
-            const SizedBox(height: 10),
-            Text("Pedido: $dessertName",
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                    color: Color(0xFF3E2723),
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold)),
+            Icon(Icons.cake_outlined, color: Color(0xFFD81B60), size: 40),
+            SizedBox(height: 10),
+            Text("Detalles del Pedido",
+                style: TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("Datos para tu entrega en Comayagua:",
-                style: TextStyle(fontSize: 12)),
+            Text("Postre: $dessertName",
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    color: Color(0xFF3E2723),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold)),
             const SizedBox(height: 15),
             TextField(
                 controller: nameController,
@@ -84,7 +85,7 @@ class _MainNavigationState extends State<MainNavigation> {
             TextField(
                 controller: addressController,
                 decoration: const InputDecoration(
-                    labelText: "Dirección Exacta",
+                    labelText: "Dirección en Comayagua",
                     border: OutlineInputBorder())),
           ],
         ),
@@ -100,13 +101,13 @@ class _MainNavigationState extends State<MainNavigation> {
               if (nameController.text.isNotEmpty &&
                   addressController.text.isNotEmpty) {
                 String msg =
-                    "¡Hola Tylas Sweet! 🍰\nSoy: ${nameController.text}\nDirección: ${addressController.text}\nMe interesa el postre: $dessertName\n¿Tienen disponible?";
+                    "¡Hola Tylas Sweet! 🍰\nSoy: ${nameController.text}\nDirección: ${addressController.text}\nPedido: $dessertName\n¿Tienen disponible?";
                 _launchURL(
                     "https://wa.me/50499656622?text=${Uri.encodeComponent(msg)}");
                 Navigator.pop(context);
               }
             },
-            child: const Text("Pedir por WhatsApp"),
+            child: const Text("Enviar a WhatsApp"),
           ),
         ],
       ),
@@ -138,11 +139,6 @@ class _MainNavigationState extends State<MainNavigation> {
       } catch (e) {
         debugPrint("Error de Radio: $e");
         setState(() => _isLoading = false);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Error conectando a la radio.")),
-          );
-        }
       }
     }
   }
@@ -168,6 +164,7 @@ class _MainNavigationState extends State<MainNavigation> {
                     const Padding(
                       padding: EdgeInsets.all(25),
                       child: Column(
+                        // Añadido const (Imagen 2222222222222.png)
                         children: [
                           Text("REPOSTERÍA ARTESANAL PROFESIONAL",
                               style: TextStyle(
@@ -176,7 +173,7 @@ class _MainNavigationState extends State<MainNavigation> {
                                   letterSpacing: 1.5)),
                           SizedBox(height: 10),
                           Text(
-                              "Ubicados en Comayagua, Honduras. Calidad premium y entrega a domicilio.",
+                              "Calidad premium y entrega a domicilio en Comayagua.",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   color: Color(0xFFFFF3E0), fontSize: 13)),
@@ -202,18 +199,15 @@ class _MainNavigationState extends State<MainNavigation> {
                               color: Colors.white10, indent: 50, endIndent: 50),
                           const SizedBox(height: 10),
                           const Text(
-                            "© 2026 Tylas Sweet. Todos los derechos reservados.",
-                            style:
-                                TextStyle(color: Colors.white38, fontSize: 11),
-                          ),
+                              "© 2026 Tylas Sweet. Todos los derechos reservados.",
+                              style: TextStyle(
+                                  color: Colors.white38, fontSize: 11)),
                           const SizedBox(height: 4),
-                          Text(
-                            "By Jasson Flores | jassonf478@gmail.com",
-                            style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.5),
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold),
-                          ),
+                          Text("By Jasson Flores | jassonf478@gmail.com",
+                              style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.5),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ),
@@ -221,6 +215,8 @@ class _MainNavigationState extends State<MainNavigation> {
                 ),
               ),
             ),
+
+            // HEADER - CORREGIDO .withValues (Imagen 1999999.png)
             Positioned(
               top: 15,
               left: 10,
@@ -233,7 +229,8 @@ class _MainNavigationState extends State<MainNavigation> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.15),
+                      color: Colors.white
+                          .withValues(alpha: 0.15), // Reemplazado withOpacity
                       borderRadius: BorderRadius.circular(50),
                       border: Border.all(
                           color: Colors.white.withValues(alpha: 0.2)),
@@ -330,7 +327,10 @@ class DynamicGrid extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.all(12),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3, crossAxisSpacing: 12, mainAxisSpacing: 12),
+        crossAxisCount: 3,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+      ),
       itemCount: list.length,
       itemBuilder: (context, i) {
         return InkWell(
